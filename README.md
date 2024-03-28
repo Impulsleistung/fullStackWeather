@@ -1,2 +1,1 @@
-# fullStackWeather
-Full Stack Weather Station
+# Full Stack Weather App
