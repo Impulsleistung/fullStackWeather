@@ -1,0 +1,12 @@
+./.cache.sqlite
+./.gitignore
+./app/refactored.py
+./data/weather.json
+./data/weather_plot.html
+./data/weather_plot.jpg
+./Dockerfile
+./k8s/weather-nginx-deployment.yaml
+./LICENSE
+./README.md
+./requirements.txt
+./structure.txt

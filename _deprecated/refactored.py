@@ -10,7 +10,6 @@ from datetime import datetime
 import mpld3
 import base64
 
-
 def setup_openmeteo_api_client():
     """
     Sets up the Open-Meteo API client with caching and retry mechanisms.
@@ -71,13 +70,7 @@ import matplotlib.dates as mdates
 from datetime import datetime
 import mpld3
 import base64
-
-# Additional imports
 import pandas as pd
-
-# Assuming other functions (setup_openmeteo_api_client, fetch_and_process_weather_data) remain unchanged
-
-
 import base64  # Ensure this import is at the top of your script
 
 
@@ -167,11 +160,6 @@ def plot_weather_data(df, export_html=False):
 
     plt.tight_layout()
     export_plot_to_html(fig)
-
-
-# Then, you would proceed with the rest of your code to use these updated functions.
-
-import json  # Add this import if not already present
 
 
 def save_data_as_json(data, filename="data/weather.json"):
