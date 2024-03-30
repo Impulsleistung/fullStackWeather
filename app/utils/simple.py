@@ -77,15 +77,16 @@ def save_data_as_json(data, filename="data/weather.json"):
     print(f"Data successfully saved to {filename}.")
 
 
-# Usage Example
-openmeteo_client = setup_openmeteo_api_client()
-weather_df = fetch_and_process_weather_data(
-    openmeteo_client,
-    latitude=48.8844,  # Replace with your latitude
-    longitude=8.6989,   # Replace with your longitude
-    variables=["temperature_2m", "rain", "surface_pressure"],
-    past_days=3,
-    forecast_days=3,
-)
-print(weather_df.head())  # Displaying a part of the DataFrame for verification
-save_data_as_json(weather_df)
+def execute_something():
+    # Usage Example
+    openmeteo_client = setup_openmeteo_api_client()
+    weather_df = fetch_and_process_weather_data(
+        openmeteo_client,
+        latitude=48.8844,  # Replace with your latitude
+        longitude=8.6989,  # Replace with your longitude
+        variables=["temperature_2m", "rain", "surface_pressure"],
+        past_days=3,
+        forecast_days=3,
+    )
+    save_data_as_json(weather_df)
+    print(weather_df.head())  # Displaying a part of the DataFrame for verification

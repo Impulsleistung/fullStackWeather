@@ -10,6 +10,7 @@ from datetime import datetime
 import mpld3
 import base64
 
+
 def setup_openmeteo_api_client():
     """
     Sets up the Open-Meteo API client with caching and retry mechanisms.

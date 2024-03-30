@@ -4,3 +4,8 @@ pandas
 retry-requests
 matplotlib
 mpld3
+fastapi
+uvicorn
+jinja2
+plotly
+apscheduler
