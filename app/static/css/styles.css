@@ -16,3 +16,7 @@
   border: 1px solid #ccc; /* Grey border around each plot */
 }
 
+/* Specific style for the markdown container */
+#markdownDiv {
+  border: 2px solid #ccc; /* 20 pixels grey border */
+}

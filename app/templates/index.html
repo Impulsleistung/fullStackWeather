@@ -4,6 +4,7 @@
     <title>Weather Visualization</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
     <link rel="stylesheet" href="/static/css/styles.css" />
   </head>
   <body>
@@ -11,7 +12,11 @@
       <div class="plot-container" id="temperatureDiv"></div>
       <div class="plot-container" id="rainDiv"></div>
       <div class="plot-container" id="pressureDiv"></div>
+      <div class="plot-container" id="markdownDiv"></div>
+      <!-- New Markdown container -->
     </div>
     <script src="/static/js/plotly_demo.js"></script>
+    <script src="/static/js/markdown-content.js"></script>
+    <!-- Reference to the new script -->
   </body>
 </html>
