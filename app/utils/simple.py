@@ -106,8 +106,8 @@ def execute_something():
         latitude=48.8844,  # Replace with your latitude
         longitude=8.6989,  # Replace with your longitude
         variables=["temperature_2m", "rain", "surface_pressure"],
-        past_days=3,
-        forecast_days=3,
+        past_days=0,
+        forecast_days=4,
     )
     save_data_as_csv(weather_df)
     print(weather_df.head())  # Displaying a part of the DataFrame for verification
