@@ -44,3 +44,36 @@ find -type d -name .git -prune -o -type f -print > structure.txt
 
 write a fasiAPI: Every time when the fasiAPI gets called: a simple Plotly.js application with demo data shall be shown.
 give the project file structure of this project. Also provide the steps to test it on my windows computer.
+
+╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────╮
+│   prompt      [PROMPT]  The prompt to generate completions for.                                          │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --model            TEXT                       Large language model to use. [default: gpt-4-1106-preview] │
+│ --temperature      FLOAT RANGE [0.0<=x<=2.0]  Randomness of generated output. [default: 0.0]             │
+│ --top-p            FLOAT RANGE [0.0<=x<=1.0]  Limits highest probable tokens (words). [default: 1.0]     │
+│ --md             --no-md                      Prettify markdown output. [default: md]                    │
+│ --editor                                      Open $EDITOR to provide a prompt. [default: no-editor]     │
+│ --cache                                       Cache completion results. [default: cache]                 │
+│ --version                                     Show version.                                              │
+│ --help                                        Show this message and exit.                                │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Assistance Options ─────────────────────────────────────────────────────────────────────────────────────╮
+│ --shell           -s                      Generate and execute shell commands.                           │
+│ --interaction         --no-interaction    Interactive mode for --shell option. [default: interaction]    │
+│ --describe-shell  -d                      Describe a shell command.                                      │
+│ --code            -c                      Generate only code.                                            │
+│ --functions           --no-functions      Allow function calls. [default: functions]                     │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Chat Options ───────────────────────────────────────────────────────────────────────────────────────────╮
+│ --chat                 TEXT  Follow conversation with id, use "temp" for quick session. [default: None]  │
+│ --repl                 TEXT  Start a REPL (Read–eval–print loop) session. [default: None]                │
+│ --show-chat            TEXT  Show all messages from provided chat id. [default: None]                    │
+│ --list-chats  -lc            List all existing chat ids.                                                 │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Role Options ───────────────────────────────────────────────────────────────────────────────────────────╮
+│ --role                  TEXT  System role for GPT model. [default: None]                                 │
+│ --create-role           TEXT  Create role. [default: None]                                               │
+│ --show-role             TEXT  Show role. [default: None]                                                 │
+│ --list-roles   -lr            List roles.                                                                │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯

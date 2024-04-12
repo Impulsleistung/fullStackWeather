@@ -1,7 +1,6 @@
 To run and inspect your Docker container locally, follow these steps using Docker commands in your terminal. Here’s how you can do it:
 
 ### Step 1: Build the Docker Image
-First, you need to build the Docker image from the Dockerfile you've set up. Navigate to the root directory of your project where your Dockerfile is located and run:
 
 ```bash
 docker build -t weather-app:local .
