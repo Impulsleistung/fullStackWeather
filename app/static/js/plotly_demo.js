@@ -7,8 +7,8 @@ d3.csv("/static/js/weather.csv").then((data) => {
 
   // Define a common dark theme layout with white grid lines
   const darkLayout = {
-    paper_bgcolor: "#30404D", // Dark background for the plot area
-    plot_bgcolor: "#30404D", // Same as paper background
+    paper_bgcolor: "#5f7f99", // Dark background for the plot area
+    plot_bgcolor: "#5f7f99", // Same as paper background
     font: {
       color: "#FFFFFF", // White font for better visibility
     },
