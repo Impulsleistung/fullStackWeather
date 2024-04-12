@@ -1,19 +1,20 @@
 My project structure is as follows:
 
-./.cache.sqlite
-./.gitignore
-./app/refactored.py
-./data/weather.json
-./data/weather_plot.html
-./data/weather_plot.jpg
+./app/main.py
+./app/static/js/demo_data.json
+./app/static/js/plotly_demo.js
+./app/templates/index.html
+./app/utils/simple.py
 ./Dockerfile
-./k8s/cronjob.yaml
 ./k8s/deployment.yaml
 ./k8s/service.yaml
 ./LICENSE
 ./README.md
 ./requirements.txt
 ./structure.txt
+./_deprecated/refactored.py
+./_do-this-later/Dockerfile
+
 
 The project shall run and be able to be reached on a linode kubernetes cluster.
 
@@ -40,3 +41,6 @@ If there is a better architecture or approach to achieve that, then feel free to
 find -type d -name .git -prune -o -type f -print > structure.txt
 
 
+
+write a fasiAPI: Every time when the fasiAPI gets called: a simple Plotly.js application with demo data shall be shown.
+give the project file structure of this project. Also provide the steps to test it on my windows computer.

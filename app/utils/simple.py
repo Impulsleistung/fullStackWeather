@@ -58,8 +58,8 @@ def fetch_and_process_weather_data(
 
     return pd.DataFrame(data=hourly_data)
 
-
-def save_data_as_json(data, filename="data/weather.json"):
+# C:\Users\info\Desktop\fullStackWeather\app\static\js\demo_data.json
+def save_data_as_json(data, filename="app/static/js/weather.json"):
     """
     Saves the given data in a JSON file.
 
