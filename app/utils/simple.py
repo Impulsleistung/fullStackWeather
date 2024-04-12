@@ -58,32 +58,6 @@ def fetch_and_process_weather_data(
 
     return pd.DataFrame(data=hourly_data)
 
-
-# C:\Users\info\Desktop\fullStackWeather\app\static\js\demo_data.json
-def save_data_as_json(data, filename="app/static/js/weather.json"):
-    """
-    Saves the given data in a JSON file without list brackets.
-
-    Parameters:
-    - data: Pandas DataFrame containing the weather data.
-    - filename: The path and name of the file where the data will be saved.
-    """
-    # Convert the pandas DataFrame to a JSON string, iterating row by row
-    # Start with an empty string to accumulate the JSON records
-    json_str = ""
-
-    # Iterate over the DataFrame rows and convert each to a JSON string
-    for _, row in data.iterrows():
-        if json_str != "":
-            json_str += ",\n"  # Add a comma and newline for separation between records
-        json_str += row.to_json()  # Convert the row to JSON format
-
-    # Write the JSON string to a file without the list brackets
-    with open(filename, "w") as file:
-        file.write(json_str)
-
-    print(f"Data successfully saved to {filename}.")
-
 def save_data_as_csv(data, filename="app/static/js/weather.csv"):
     """
     Saves the given data in a CSV file without headers.

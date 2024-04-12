@@ -5,26 +5,10 @@ d3.csv("/static/js/weather.csv").then((data) => {
   const rain = data.map((d) => d.rain);
   const surfacePressure = data.map((d) => d.surface_pressure);
 
-  // Define a common dark theme layout with white grid lines
+  // Define a common dark theme layout with white grid lines and zero margins
   const darkLayout = {
-    paper_bgcolor: "#5f7f99", // Dark background for the plot area
-    plot_bgcolor: "#5f7f99", // Same as paper background
-    font: {
-      color: "#FFFFFF", // White font for better visibility
-    },
-    xaxis: {
-      gridcolor: "#FFFFFF", // White grid lines for the x-axis
-      zerolinecolor: "#FFFFFF", // White zero line for the x-axis
-    },
-    yaxis: {
-      gridcolor: "#FFFFFF", // White grid lines for the y-axis
-      zerolinecolor: "#FFFFFF", // White zero line for the y-axis
-    },
-    title: {
-      font: {
-        size: 16,
-      },
-    },
+    margin: { l: 20, r: 20, t: 10, b: 50 }, // Zero margins
+    paper_padding: 1,
   };
 
   // Create the temperature plot with the dark theme
@@ -37,10 +21,13 @@ d3.csv("/static/js/weather.csv").then((data) => {
         type: "scatter",
         mode: "lines+markers",
         name: "Temperature",
-        marker: { color: "red" }, // Optional: Adjust marker color for visibility
+        marker: { color: "red" },
       },
     ],
-    { ...darkLayout, title: "Temperature (°C)" }
+    {
+      ...darkLayout,
+      yaxis: { title: "Temperature (°C)", automargin: true }, // Y-axis label added with auto margin
+    }
   );
 
   // Create the rain plot with the dark theme
@@ -53,10 +40,13 @@ d3.csv("/static/js/weather.csv").then((data) => {
         type: "scatter",
         mode: "lines+markers",
         name: "Rain",
-        marker: { color: "blue" }, // Optional: Adjust marker color for visibility
+        marker: { color: "blue" },
       },
     ],
-    { ...darkLayout, title: "Rain (mm)" }
+    {
+      ...darkLayout,
+      yaxis: { title: "Rain (mm)", automargin: true }, // Y-axis label added with auto margin
+    }
   );
 
   // Create the surface pressure plot with the dark theme
@@ -69,9 +59,12 @@ d3.csv("/static/js/weather.csv").then((data) => {
         type: "scatter",
         mode: "lines+markers",
         name: "Surface Pressure",
-        marker: { color: "green" }, // Optional: Adjust marker color for visibility
+        marker: { color: "green" },
       },
     ],
-    { ...darkLayout, title: "Surface Pressure (hPa)" }
+    {
+      ...darkLayout,
+      yaxis: { title: "Surface Pressure (hPa)", automargin: true }, // Y-axis label added with auto margin
+    }
   );
 });

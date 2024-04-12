@@ -1,24 +1,18 @@
-/* General Styling */
-body {
-  font-family: sans-serif;
-}
-
-/* The magic of responsive grid */
+/* Set up the overall grid layout for the plots */
 .plot-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2px;
-  max-height: 60vh; /* A flexible height limit */
+  grid-template-columns: 1fr 1fr; /* Two columns of equal width */
+  grid-template-rows: 1fr 1fr; /* Two rows of equal height */
+  grid-gap: 2px; /* Space between grid cells */
+  padding: 2px; /* Padding around the grid */
+  height: 100vh; /* Full viewport height */
+  box-sizing: border-box; /* Include padding in height calculations */
 }
 
+/* Styling individual plot containers */
 .plot-container {
-  /* Ensure plots adapt to their container */
-}
-
-/* Making it look good on smaller screens */
-@media (max-width: 768px) {
-  .plot-grid {
-    grid-template-columns: 1fr; /* Stack plots vertically on smaller screens */
-  }
+  width: 100%; /* Full width of the grid cell */
+  height: 100%; /* Full height of the grid cell */
+  border: 1px solid #ccc; /* Grey border around each plot */
 }
 
