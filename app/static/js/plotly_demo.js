@@ -1,6 +1,3 @@
-// Install D3.js to help with CSV parsing
-// Load the CSV data
-
 d3.csv("/static/js/weather.csv").then((data) => {
   // Prepare the data for Plotly
   const x = data.map((d) => d.date);
@@ -8,7 +5,29 @@ d3.csv("/static/js/weather.csv").then((data) => {
   const rain = data.map((d) => d.rain);
   const surfacePressure = data.map((d) => d.surface_pressure);
 
-  // Create the temperature plot
+  // Define a common dark theme layout with white grid lines
+  const darkLayout = {
+    paper_bgcolor: "#30404D", // Dark background for the plot area
+    plot_bgcolor: "#30404D", // Same as paper background
+    font: {
+      color: "#FFFFFF", // White font for better visibility
+    },
+    xaxis: {
+      gridcolor: "#FFFFFF", // White grid lines for the x-axis
+      zerolinecolor: "#FFFFFF", // White zero line for the x-axis
+    },
+    yaxis: {
+      gridcolor: "#FFFFFF", // White grid lines for the y-axis
+      zerolinecolor: "#FFFFFF", // White zero line for the y-axis
+    },
+    title: {
+      font: {
+        size: 16,
+      },
+    },
+  };
+
+  // Create the temperature plot with the dark theme
   Plotly.newPlot(
     "temperatureDiv",
     [
@@ -18,14 +37,13 @@ d3.csv("/static/js/weather.csv").then((data) => {
         type: "scatter",
         mode: "lines+markers",
         name: "Temperature",
+        marker: { color: "red" }, // Optional: Adjust marker color for visibility
       },
     ],
-    {
-      title: "Temperature (°C)",
-    }
+    { ...darkLayout, title: "Temperature (°C)" }
   );
 
-  // Create the rain plot
+  // Create the rain plot with the dark theme
   Plotly.newPlot(
     "rainDiv",
     [
@@ -35,14 +53,13 @@ d3.csv("/static/js/weather.csv").then((data) => {
         type: "scatter",
         mode: "lines+markers",
         name: "Rain",
+        marker: { color: "blue" }, // Optional: Adjust marker color for visibility
       },
     ],
-    {
-      title: "Rain (mm)",
-    }
+    { ...darkLayout, title: "Rain (mm)" }
   );
 
-  // Create the surface pressure plot
+  // Create the surface pressure plot with the dark theme
   Plotly.newPlot(
     "pressureDiv",
     [
@@ -52,10 +69,9 @@ d3.csv("/static/js/weather.csv").then((data) => {
         type: "scatter",
         mode: "lines+markers",
         name: "Surface Pressure",
+        marker: { color: "green" }, // Optional: Adjust marker color for visibility
       },
     ],
-    {
-      title: "Surface Pressure (hPa)",
-    }
+    { ...darkLayout, title: "Surface Pressure (hPa)" }
   );
 });

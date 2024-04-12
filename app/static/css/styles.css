@@ -1,24 +1,24 @@
 /* General Styling */
 body {
   font-family: sans-serif;
-  margin: 20px;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-/* Grid Layout */
+/* The magic of responsive grid */
 .plot-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Two equal columns */
-  gap: 15px; /* Spacing between grid cells */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  max-height: 60vh; /* A flexible height limit */
 }
 
-/* Plot Container Styling */
-.plot-container { 
-  border: 1px solid #ddd;
-  padding: 5px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+.plot-container {
+  /* Ensure plots adapt to their container */
 }
+
+/* Making it look good on smaller screens */
+@media (max-width: 768px) {
+  .plot-grid {
+    grid-template-columns: 1fr; /* Stack plots vertically on smaller screens */
+  }
+}
+
