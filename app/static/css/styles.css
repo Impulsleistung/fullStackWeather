@@ -1,0 +1,24 @@
+/* General Styling */
+body {
+  font-family: sans-serif;
+  margin: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Grid Layout */
+.plot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two equal columns */
+  gap: 15px; /* Spacing between grid cells */
+}
+
+/* Plot Container Styling */
+.plot-container { 
+  border: 1px solid #ddd;
+  padding: 5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}

@@ -2,13 +2,17 @@
 <html>
   <head>
     <title>Weather Visualization</title>
-
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <link rel="stylesheet" href="/static/css/styles.css" />
   </head>
   <body>
-    <div id="myDiv"></div>
-
+    <div class="plot-grid">
+      <div class="plot-container" id="temperatureDiv"></div>
+      <div class="plot-container" id="rainDiv"></div>
+      <div class="plot-container" id="pressureDiv"></div>
+      <div class="plot-container"></div>
+    </div>
     <script src="/static/js/plotly_demo.js"></script>
   </body>
 </html>

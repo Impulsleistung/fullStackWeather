@@ -1,19 +1,61 @@
 // Install D3.js to help with CSV parsing
-// You may need to run 'npm install d3' or similar in your project
-
 // Load the CSV data
+
 d3.csv("/static/js/weather.csv").then((data) => {
   // Prepare the data for Plotly
   const x = data.map((d) => d.date);
-  const y = data.map((d) => d.temperature_2m); // Create the Plotly plot
+  const temperature = data.map((d) => d.temperature_2m);
+  const rain = data.map((d) => d.rain);
+  const surfacePressure = data.map((d) => d.surface_pressure);
 
-  Plotly.newPlot("myDiv", [
+  // Create the temperature plot
+  Plotly.newPlot(
+    "temperatureDiv",
+    [
+      {
+        x: x,
+        y: temperature,
+        type: "scatter",
+        mode: "lines+markers",
+        name: "Temperature",
+      },
+    ],
     {
-      x: x,
-      y: y,
-      type: "scatter",
-      mode: "lines+markers", // Add lines and markers for better visualization
-    },
-  ]);
+      title: "Temperature (°C)",
+    }
+  );
+
+  // Create the rain plot
+  Plotly.newPlot(
+    "rainDiv",
+    [
+      {
+        x: x,
+        y: rain,
+        type: "scatter",
+        mode: "lines+markers",
+        name: "Rain",
+      },
+    ],
+    {
+      title: "Rain (mm)",
+    }
+  );
+
+  // Create the surface pressure plot
+  Plotly.newPlot(
+    "pressureDiv",
+    [
+      {
+        x: x,
+        y: surfacePressure,
+        type: "scatter",
+        mode: "lines+markers",
+        name: "Surface Pressure",
+      },
+    ],
+    {
+      title: "Surface Pressure (hPa)",
+    }
+  );
 });
- 
