@@ -1,0 +1,22 @@
+/* Set up the overall grid layout for the plots */
+.plot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns of equal width */
+  grid-template-rows: 1fr 1fr; /* Two rows of equal height */
+  grid-gap: 2px; /* Space between grid cells */
+  padding: 2px; /* Padding around the grid */
+  height: 100vh; /* Full viewport height */
+  box-sizing: border-box; /* Include padding in height calculations */
+}
+
+/* Styling individual plot containers */
+.plot-container {
+  width: 100%; /* Full width of the grid cell */
+  height: 100%; /* Full height of the grid cell */
+  border: 1px solid #ccc; /* Grey border around each plot */
+}
+
+/* Specific style for the markdown container */
+#markdownDiv {
+  border: 2px solid #ccc; /* 20 pixels grey border */
+}

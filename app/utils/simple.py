@@ -58,21 +58,16 @@ def fetch_and_process_weather_data(
 
     return pd.DataFrame(data=hourly_data)
 
-
-def save_data_as_json(data, filename="data/weather.json"):
+def save_data_as_csv(data, filename="app/static/js/weather.csv"):
     """
-    Saves the given data in a JSON file.
+    Saves the given data in a CSV file without headers.
 
     Parameters:
     - data: Pandas DataFrame containing the weather data.
     - filename: The path and name of the file where the data will be saved.
     """
-    # Convert the pandas DataFrame to a JSON string
-    json_str = data.to_json(orient="records")
-
-    # Write the JSON string to a file
-    with open(filename, "w") as file:
-        file.write(json_str)
+    # Write the DataFrame to a CSV file without headers
+    data.to_csv(filename, header=True, index=False)
 
     print(f"Data successfully saved to {filename}.")
 
@@ -85,8 +80,8 @@ def execute_something():
         latitude=48.8844,  # Replace with your latitude
         longitude=8.6989,  # Replace with your longitude
         variables=["temperature_2m", "rain", "surface_pressure"],
-        past_days=3,
-        forecast_days=3,
+        past_days=0,
+        forecast_days=2,
     )
-    save_data_as_json(weather_df)
+    save_data_as_csv(weather_df)
     print(weather_df.head())  # Displaying a part of the DataFrame for verification
