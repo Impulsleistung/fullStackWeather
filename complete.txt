@@ -1,0 +1,859 @@
+File: ./app/main.py
+Path: ./app
+----------------------------------------
+from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from app.utils.simple import execute_something
+import asyncio
+
+app = FastAPI()
+
+
+async def periodic_task():
+    while True:
+        execute_something()  # Call your function
+        await asyncio.sleep(600)  # Wait for 10 minutes (600 seconds)
+
+
+asyncio.create_task(periodic_task())  # Start the periodic task
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+templates = Jinja2Templates(directory="app/templates")
+
+
+@app.get("/")
+async def get_plot(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+
+File: ./app/static/css/styles.css
+Path: ./app/static/css
+----------------------------------------
+/* Set up the overall grid layout for the plots */
+.plot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns of equal width */
+  grid-template-rows: 1fr 1fr; /* Two rows of equal height */
+  grid-gap: 2px; /* Space between grid cells */
+  padding: 2px; /* Padding around the grid */
+  height: 100vh; /* Full viewport height */
+  box-sizing: border-box; /* Include padding in height calculations */
+}
+
+/* Styling individual plot containers */
+.plot-container {
+  width: 100%; /* Full width of the grid cell */
+  height: 100%; /* Full height of the grid cell */
+  border: 1px solid #ccc; /* Grey border around each plot */
+}
+
+/* Specific style for the markdown container */
+#markdownDiv {
+  border: 2px solid #ccc; /* 20 pixels grey border */
+}
+
+
+
+File: ./app/static/js/markdown-content.js
+Path: ./app/static/js
+----------------------------------------
+window.onload = function () {
+  var converter = new showdown.Converter();
+  fetch("/static/js/text.md")
+    .then((response) => response.text())
+    .then((text) => {
+      var html = converter.makeHtml(text);
+      document.getElementById("markdownDiv").innerHTML = html;
+    })
+    .catch((err) => console.error("Failed to load markdown file:", err));
+};
+
+
+
+File: ./app/static/js/plotly_demo.js
+Path: ./app/static/js
+----------------------------------------
+d3.csv("/static/js/weather.csv").then((data) => {
+  // Prepare the data for Plotly
+  const x = data.map((d) => d.date);
+  const temperature = data.map((d) => d.temperature_2m);
+  const rain = data.map((d) => d.rain);
+  const surfacePressure = data.map((d) => d.surface_pressure);
+
+  // Define a common dark theme layout with white grid lines and zero margins
+  const darkLayout = {
+    margin: { l: 20, r: 20, t: 10, b: 50 }, // Zero margins
+    paper_padding: 1,
+  };
+
+  // Create the temperature plot with the dark theme
+  Plotly.newPlot(
+    "temperatureDiv",
+    [
+      {
+        x: x,
+        y: temperature,
+        type: "scatter",
+        mode: "lines+markers",
+        name: "Temperature",
+        marker: { color: "red" },
+      },
+    ],
+    {
+      ...darkLayout,
+      yaxis: { title: "Temperature (°C)", automargin: true }, // Y-axis label added with auto margin
+    }
+  );
+
+  // Create the rain plot with the dark theme
+  Plotly.newPlot(
+    "rainDiv",
+    [
+      {
+        x: x,
+        y: rain,
+        type: "scatter",
+        mode: "lines+markers",
+        name: "Rain",
+        marker: { color: "blue" },
+      },
+    ],
+    {
+      ...darkLayout,
+      yaxis: { title: "Rain (mm)", automargin: true }, // Y-axis label added with auto margin
+    }
+  );
+
+  // Create the surface pressure plot with the dark theme
+  Plotly.newPlot(
+    "pressureDiv",
+    [
+      {
+        x: x,
+        y: surfacePressure,
+        type: "scatter",
+        mode: "lines+markers",
+        name: "Surface Pressure",
+        marker: { color: "green" },
+      },
+    ],
+    {
+      ...darkLayout,
+      yaxis: { title: "Surface Pressure (hPa)", automargin: true }, // Y-axis label added with auto margin
+    }
+  );
+});
+
+
+
+File: ./app/static/js/text.md
+Path: ./app/static/js
+----------------------------------------
+This full stack project is a weather visualization web application built using FastAPI, JavaScript, Plotly, and Docker, hosted in a Kubernetes environment.
+_Built by [Kevin Ostheimer](http://www.impulsleistung.de), 2024._
+
+**Backend Application (FastAPI):** The backend, written in Python using FastAPI, manages periodic tasks that fetch and process weather data using an Open-Meteo API client. __City: Pforzheim, Germany.__
+
+**Frontend Visualization:** The frontend utilizes Plotly and D3.js to visualize weather data (temperature, rain, surface pressure) from the updated CSV file.
+
+**Web Interface:** An HTML page serves as the interface where users can view these visualizations in different plots.
+
+**Data Management:** The application uses caching and retry mechanisms for API requests to ensure data reliability and availability.
+
+**Deployment and Service:** The application is containerized using Docker and deployed using Kubernetes, allowing for scalable and robust hosting.
+
+
+File: ./app/static/js/weather.csv
+Path: ./app/static/js
+----------------------------------------
+date,temperature_2m,rain,surface_pressure
+2024-04-12 00:00:00+00:00,6.6595,0.0,1002.7093
+2024-04-12 01:00:00+00:00,6.0095,0.0,1002.5394
+2024-04-12 02:00:00+00:00,5.7095003,0.0,1002.6025
+2024-04-12 03:00:00+00:00,7.5595,0.0,1002.3255
+2024-04-12 04:00:00+00:00,6.6095,0.0,1002.41296
+2024-04-12 05:00:00+00:00,5.9095,0.0,1002.2375
+2024-04-12 06:00:00+00:00,8.6095,0.0,1002.92676
+2024-04-12 07:00:00+00:00,12.5095005,0.0,1002.9648
+2024-04-12 08:00:00+00:00,14.4595,0.0,1003.27026
+2024-04-12 09:00:00+00:00,16.8095,0.0,1002.4511
+2024-04-12 10:00:00+00:00,17.8095,0.0,1002.846
+2024-04-12 11:00:00+00:00,18.9095,0.0,1001.9897
+2024-04-12 12:00:00+00:00,19.6095,0.0,1001.9644
+2024-04-12 13:00:00+00:00,20.1595,0.0,1001.7293
+2024-04-12 14:00:00+00:00,20.3595,0.0,1000.6823
+2024-04-12 15:00:00+00:00,20.7595,0.0,1000.0437
+2024-04-12 16:00:00+00:00,20.8095,0.0,999.95166
+2024-04-12 17:00:00+00:00,19.9095,0.0,999.181
+2024-04-12 18:00:00+00:00,18.8595,0.0,999.4614
+2024-04-12 19:00:00+00:00,16.0095,0.0,999.6508
+2024-04-12 20:00:00+00:00,12.9595,0.0,999.8129
+2024-04-12 21:00:00+00:00,12.0095005,0.0,999.90466
+2024-04-12 22:00:00+00:00,11.2595005,0.0,999.8237
+2024-04-12 23:00:00+00:00,11.2095,0.0,999.8183
+2024-04-13 00:00:00+00:00,11.0595,0.0,999.5112
+2024-04-13 01:00:00+00:00,10.7095,0.0,999.2795
+2024-04-13 02:00:00+00:00,10.7595005,0.0,999.38184
+2024-04-13 03:00:00+00:00,11.2095,0.0,999.33356
+2024-04-13 04:00:00+00:00,10.9095,0.0,998.91345
+2024-04-13 05:00:00+00:00,10.2595005,0.0,998.8426
+2024-04-13 06:00:00+00:00,11.3095,0.0,999.05347
+2024-04-13 07:00:00+00:00,15.8095,0.0,999.04803
+2024-04-13 08:00:00+00:00,18.4095,0.0,999.1241
+2024-04-13 09:00:00+00:00,19.9595,0.0,998.6037
+2024-04-13 10:00:00+00:00,21.2595,0.0,998.1532
+2024-04-13 11:00:00+00:00,22.3595,0.0,997.48706
+2024-04-13 12:00:00+00:00,23.2095,0.0,996.8924
+2024-04-13 13:00:00+00:00,23.8595,0.0,996.0833
+2024-04-13 14:00:00+00:00,24.2095,0.0,995.1469
+2024-04-13 15:00:00+00:00,24.6095,0.0,994.40967
+2024-04-13 16:00:00+00:00,25.1095,0.0,993.9734
+2024-04-13 17:00:00+00:00,23.9095,0.0,993.5641
+2024-04-13 18:00:00+00:00,21.6595,0.0,993.2433
+2024-04-13 19:00:00+00:00,16.7095,0.0,992.9333
+2024-04-13 20:00:00+00:00,15.6095,0.0,992.72186
+2024-04-13 21:00:00+00:00,14.7595005,0.0,992.53595
+2024-04-13 22:00:00+00:00,14.7595005,0.0,992.342
+2024-04-13 23:00:00+00:00,16.109499,0.0,992.09503
+
+
+
+File: ./app/templates/index.html
+Path: ./app/templates
+----------------------------------------
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Weather Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <div class="plot-grid">
+      <div class="plot-container" id="temperatureDiv"></div>
+      <div class="plot-container" id="rainDiv"></div>
+      <div class="plot-container" id="pressureDiv"></div>
+      <div class="plot-container" id="markdownDiv"></div>
+      <!-- New Markdown container -->
+    </div>
+    <script src="/static/js/plotly_demo.js"></script>
+    <script src="/static/js/markdown-content.js"></script>
+    <!-- Reference to the new script -->
+  </body>
+</html>
+
+
+
+File: ./app/utils/simple.py
+Path: ./app/utils
+----------------------------------------
+import json
+import openmeteo_requests
+import requests_cache
+from retry_requests import retry
+import pandas as pd
+
+
+def setup_openmeteo_api_client():
+    """
+    Sets up the Open-Meteo API client with caching and retry mechanisms.
+    Returns an Open-Meteo client object.
+    """
+    cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
+    retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
+    openmeteo_client = openmeteo_requests.Client(session=retry_session)
+    return openmeteo_client
+
+
+def fetch_and_process_weather_data(
+    client, latitude, longitude, variables, past_days, forecast_days
+):
+    """
+    Fetches and processes weather data for a given location.
+
+    Parameters:
+    - client: Open-Meteo client object.
+    - latitude: Latitude of the location.
+    - longitude: Longitude of the location.
+    - variables: List of weather variables to fetch.
+    - past_days: Number of past days to fetch data for.
+    - forecast_days: Number of forecast days to fetch data for.
+
+    Returns a DataFrame containing the weather data.
+    """
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "hourly": variables,
+        "past_days": past_days,
+        "forecast_days": forecast_days,
+    }
+    response = client.weather_api(url, params=params)[
+        0
+    ]  # Assuming single location for simplicity
+    hourly = response.Hourly()
+
+    hourly_data = {
+        "date": pd.date_range(
+            start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
+            end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
+            freq=pd.Timedelta(seconds=hourly.Interval()),
+            inclusive="left",
+        )
+    }
+    for i, variable in enumerate(variables):
+        hourly_data[variable] = hourly.Variables(i).ValuesAsNumpy()
+
+    return pd.DataFrame(data=hourly_data)
+
+def save_data_as_csv(data, filename="app/static/js/weather.csv"):
+    """
+    Saves the given data in a CSV file without headers.
+
+    Parameters:
+    - data: Pandas DataFrame containing the weather data.
+    - filename: The path and name of the file where the data will be saved.
+    """
+    # Write the DataFrame to a CSV file without headers
+    data.to_csv(filename, header=True, index=False)
+
+    print(f"Data successfully saved to {filename}.")
+
+
+def execute_something():
+    # Usage Example
+    openmeteo_client = setup_openmeteo_api_client()
+    weather_df = fetch_and_process_weather_data(
+        openmeteo_client,
+        latitude=48.8844,  # Replace with your latitude
+        longitude=8.6989,  # Replace with your longitude
+        variables=["temperature_2m", "rain", "surface_pressure"],
+        past_days=0,
+        forecast_days=2,
+    )
+    save_data_as_csv(weather_df)
+    print(weather_df.head())  # Displaying a part of the DataFrame for verification
+
+
+
+File: ./k8s/deployment.yaml
+Path: ./k8s
+----------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-app-deployment
+  labels:
+    app: weather-app
+spec:
+  replicas: 2  # Number of replicas
+  selector:
+    matchLabels:
+      app: weather-app
+  template:
+    metadata:
+      labels:
+        app: weather-app
+    spec:
+      containers:
+      - name: weather-app
+        image: impulsleistung/weather-app:latest  # Your Docker image
+        ports:
+        - containerPort: 8000  # The port your app runs on
+
+
+
+File: ./k8s/service.yaml
+Path: ./k8s
+----------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: weather-app-service
+spec:
+  selector:
+    app: weather-app
+  ports:
+  - protocol: TCP
+    port: 80  # The service port that you will use to access externally
+    targetPort: 8000  # The application's internal port
+  type: LoadBalancer
+
+
+
+File: ./local_run.md
+Path: .
+----------------------------------------
+To run and inspect your Docker container locally, follow these steps using Docker commands in your terminal. Here’s how you can do it:
+
+### Step 1: Build the Docker Image
+
+```bash
+docker build -t weather-app:local .
+```
+
+This command builds an image and tags it as `weather-app:local`. Ensure your Dockerfile and all necessary files are correctly placed in the project directory.
+
+### Step 2: Run the Docker Container
+After building the image, run the container:
+
+```bash
+docker run -d --name weather-app-container -p 8000:8000 weather-app:local
+```
+
+Here’s what this command does:
+- `-d`: Runs the container in detached mode (in the background).
+- `--name weather-app-container`: Assigns the container a name.
+- `-p 8000:8000`: Maps port 8000 of the container to port 8000 on your host. This allows you to access the FastAPI application via `localhost:8000` in your browser.
+
+### Step 3: Inspect the Container
+To inspect various aspects of the running container, you can use several Docker commands:
+
+#### View Logs
+To see the logs from your container (which is useful for debugging), use:
+
+```bash
+docker logs weather-app-container
+```
+
+#### Check Running Processes
+To see the processes running inside the container:
+
+```bash
+docker top weather-app-container
+```
+
+#### Inspect Container Configuration
+For more detailed information about the container's configuration and environment:
+
+```bash
+docker inspect weather-app-container
+```
+
+#### Access Container’s Shell
+If you need to enter the container to explore its contents or debug it interactively:
+
+```bash
+docker exec -it weather-app-container /bin/bash
+```
+
+This command opens a bash shell inside the container. If the container does not include bash, you might need to use `/bin/sh` instead.
+
+#### Monitoring Container Performance
+To monitor the real-time performance of your container, use:
+
+```bash
+docker stats weather-app-container
+```
+
+### Step 4: Stop and Remove the Container
+When you're done, you can stop the container:
+
+```bash
+docker stop weather-app-container
+```
+
+And if you wish to remove it:
+
+```bash
+docker rm weather-app-container
+```
+
+These steps will help you run, test, and inspect your Docker container locally. Make sure each step completes without errors to ensure your application is functioning as expected inside Docker.
+
+
+File: ./README.md
+Path: .
+----------------------------------------
+# Full Stack Weather App
+
+The full-stack project is a weather visualization web application built using FastAPI, JavaScript, Plotly, and Docker, hosted in a Kubernetes environment.
+
+![result](/docs/browser_screenshot.jpg)
+
+Here are the key functionalities and components:
+
+1. **Backend Application (FastAPI):**
+
+   - The backend, written in Python using FastAPI, manages periodic tasks that fetch and process weather data using an Open-Meteo API client.
+   - Weather data for specific geographic coordinates is obtained, processed, and saved to a CSV file periodically (every 10 minutes).
+
+2. **Frontend Visualization:**
+
+   - The frontend utilizes Plotly and D3.js to visualize weather data (temperature, rain, surface pressure) from the updated CSV file.
+   - JavaScript functions fetch and convert data into graphical plots displayed in a web interface.
+
+3. **Web Interface:**
+
+   - An HTML page serves as the interface where users can view these visualizations in different plots.
+   - Markdown content is dynamically loaded and converted to HTML, providing additional information or descriptions on the webpage.
+
+4. **Data Management:**
+
+   - The application uses caching and retry mechanisms for API requests to ensure data reliability and availability.
+
+5. **Deployment and Service:**
+   - The application is containerized using Docker and deployed using Kubernetes, allowing for scalable and robust hosting.
+   - It includes configurations for a load-balanced service to manage traffic to multiple instances of the application.
+
+_Built by Kevin Ostheimer, 2024_
+
+
+
+File Tree:
+.
+./.cache.sqlite
+./.git
+./.git/COMMIT_EDITMSG
+./.git/config
+./.git/description
+./.git/FETCH_HEAD
+./.git/HEAD
+./.git/hooks
+./.git/hooks/applypatch-msg.sample
+./.git/hooks/commit-msg.sample
+./.git/hooks/fsmonitor-watchman.sample
+./.git/hooks/post-update.sample
+./.git/hooks/pre-applypatch.sample
+./.git/hooks/pre-commit.sample
+./.git/hooks/pre-merge-commit.sample
+./.git/hooks/pre-push.sample
+./.git/hooks/pre-rebase.sample
+./.git/hooks/pre-receive.sample
+./.git/hooks/prepare-commit-msg.sample
+./.git/hooks/push-to-checkout.sample
+./.git/hooks/update.sample
+./.git/index
+./.git/info
+./.git/info/exclude
+./.git/logs
+./.git/logs/HEAD
+./.git/logs/refs
+./.git/logs/refs/heads
+./.git/logs/refs/heads/dev
+./.git/logs/refs/heads/doc
+./.git/logs/refs/heads/main
+./.git/logs/refs/remotes
+./.git/logs/refs/remotes/origin
+./.git/logs/refs/remotes/origin/dev
+./.git/logs/refs/remotes/origin/HEAD
+./.git/logs/refs/remotes/origin/main
+./.git/objects
+./.git/objects/02
+./.git/objects/02/bee570c2721046dbbef4c36af9b14548936dc8
+./.git/objects/06
+./.git/objects/06/1fd451a79ad25908dd8eab562a0dde6be98f48
+./.git/objects/07
+./.git/objects/07/00a4b4a30373c72f4c200919990ad333485744
+./.git/objects/07/10633c3cb78e2b100aa97f35ae3ade127cf98a
+./.git/objects/07/83493810df214d5439b9afad7d6bf8a69f2823
+./.git/objects/07/9dbebb3fa87dd855b40a4f3683db53be26427d
+./.git/objects/0a
+./.git/objects/0a/3fe892be0b10cf1594b8e6bdf3be99734885de
+./.git/objects/0a/6c9b225f0c60b140cd97a9919867aebf0cba15
+./.git/objects/0c
+./.git/objects/0c/ef13e6761a5de8087102432f50e58f4879f23e
+./.git/objects/10
+./.git/objects/10/a3b9ea90f30fbaeb740b0d266fe3fb1182d9fc
+./.git/objects/16
+./.git/objects/16/dd78b1f0d0a3424fdc1faf8ceb3d02a62a9071
+./.git/objects/18
+./.git/objects/18/5d7d3797f20db5d85e75b9972751059ca829fd
+./.git/objects/19
+./.git/objects/19/d8754b1b7e0ad60bfd92438c71529d66fc3a63
+./.git/objects/1a
+./.git/objects/1a/820c4939abef43962ab603723d6eb10b3d7c53
+./.git/objects/1f
+./.git/objects/1f/263892a5b5a68b1eae4273a3fd2ac529175f37
+./.git/objects/1f/79d7b3f4be97cd1b43a483a40eed8517187f40
+./.git/objects/21
+./.git/objects/21/c98003fe170caea8ae45109b9243fd4ca3abbd
+./.git/objects/22
+./.git/objects/22/32292805be10b836be071b7281eb4206650187
+./.git/objects/23
+./.git/objects/23/8b25748991a9402a03ba8141741ae98e242438
+./.git/objects/26
+./.git/objects/26/a1da0023d846481386f148be612f9c2a2a5477
+./.git/objects/29
+./.git/objects/29/607ad0cf25636e746d051c447dfdee539b6c66
+./.git/objects/2d
+./.git/objects/2d/df78d2ead8d32f22ee6eada563d62cbda43fdd
+./.git/objects/2e
+./.git/objects/2e/16c0420377f027e3a0bdefb1eaf07037e7c90d
+./.git/objects/2f
+./.git/objects/2f/a09242902400adaab4480c09b5c5007d633276
+./.git/objects/30
+./.git/objects/30/8a075de2de06cdadb43e58e8c77f1fc1fef0c4
+./.git/objects/30/a451774b50d1eec2899f04e12f3bcfe4b204fd
+./.git/objects/33
+./.git/objects/33/c126a8a41c0f274f8140c72598c695ac46ebba
+./.git/objects/35
+./.git/objects/35/7e406f0cf94336f90f2adf406af5b3137f1dfb
+./.git/objects/36
+./.git/objects/36/d937177da45be073e8721b1cbe10101146c6b3
+./.git/objects/39
+./.git/objects/39/3a61e7ee3fcccfdf4844a5ab7e4e77a484007d
+./.git/objects/3a
+./.git/objects/3a/67b32e72a1c63934aa6fba0986d3187ca5489b
+./.git/objects/3a/e25a029bbc9c0c83542c44c62c11dba2085034
+./.git/objects/3e
+./.git/objects/3e/b80a8d723cf29583d9a54978acd3344b6a33e6
+./.git/objects/41
+./.git/objects/41/02fdd89f6b1692d7f3f964bb8257012d78aa60
+./.git/objects/45
+./.git/objects/45/c3068e2a9ddfbb2a6ce481dacc6de3f275ca11
+./.git/objects/45/ed8f50be02a2845fcf01cab6bd7be1eafdddf2
+./.git/objects/46
+./.git/objects/46/8186c6459cae3ab540d525cfd042273ca05c06
+./.git/objects/46/f431065b42271f5fd8097907d95c988565ee5b
+./.git/objects/47
+./.git/objects/47/82101b5a8358cb4a14156467d2ec18007f59af
+./.git/objects/47/bd420a35a5bed1b7aa2b70bb69f926932d37e9
+./.git/objects/4b
+./.git/objects/4b/14bc57c4c494ab6fdb39b7080bc66e8a58fe84
+./.git/objects/4c
+./.git/objects/4c/1a1649c82e8ff60b903029e7c6469d9fa419d3
+./.git/objects/4e
+./.git/objects/4e/5d92e4779af9266c98ebc300c013ef4e83e6c3
+./.git/objects/57
+./.git/objects/57/95ceb946d050e5b2daf34f51733a9a672cb03b
+./.git/objects/58
+./.git/objects/58/2b761aa66687d64d7326f4123094fc3f61046b
+./.git/objects/58/a83175371a9ff0b17f093b0f2995875941b77a
+./.git/objects/5a
+./.git/objects/5a/e96ccd2bcad773c26d45779ca5ffea1dc525e1
+./.git/objects/5c
+./.git/objects/5c/3e4993b508329d1869e2cf30e36bc277e629d5
+./.git/objects/5d
+./.git/objects/5d/2122c3b4d885d806e44fd02d417b42e3065e3b
+./.git/objects/5d/c88bd7024c8807882dcdf1c8c49998f70e68f9
+./.git/objects/5e
+./.git/objects/5e/27b812f6755adf4902f2b3c3b79d305ddcbacf
+./.git/objects/5e/9cd0328280962be2c3123a9b6582d584c8e78b
+./.git/objects/5f
+./.git/objects/5f/3f6621531a3cf82f14ca24058e09de35a37352
+./.git/objects/5f/73aa04d21c73a4ffd19a5a8c11c7dea9f58a70
+./.git/objects/60
+./.git/objects/60/b58cb241606cf9404f03d7933d9b10a4834cf3
+./.git/objects/62
+./.git/objects/62/4c96fb5568edb007c2b8d40ad31a8d5b4ce6a6
+./.git/objects/63
+./.git/objects/63/ced324f10291bc677675e83acd5be347d5a6a2
+./.git/objects/64
+./.git/objects/64/de0f36aef36b95518d14a5e38ea460b0a91b3c
+./.git/objects/68
+./.git/objects/68/55572dca51a46947b9705ea14c813bdf6898ff
+./.git/objects/68/f34c6109bcf57c7b0d292e0ca04d66e4b1e0ba
+./.git/objects/6e
+./.git/objects/6e/149d715bcc9e937525366317e73df6ee105d6c
+./.git/objects/71
+./.git/objects/71/e4e349617cb4cb2842afab502f8bfc568c7ef8
+./.git/objects/72
+./.git/objects/72/10419c473e57db4c35343d5bb672cb8bd8da31
+./.git/objects/73
+./.git/objects/73/95f14a720723d36097eb6247ada57f47ac3a20
+./.git/objects/74
+./.git/objects/74/80539861ba19c2a436fd7559f2d623213de580
+./.git/objects/75
+./.git/objects/75/affbda8257e5038d73e0d32d1c6ff97af0241f
+./.git/objects/77
+./.git/objects/77/ef09622d7129bd7970a7e7034450da4c05fffc
+./.git/objects/78
+./.git/objects/78/b587ab55a08f8bda285ac77eadba93972a117b
+./.git/objects/7a
+./.git/objects/7a/a76109995f2da35408673924adaeaebb9bbc10
+./.git/objects/7a/c668546881fff2c377a24d0b92b01638da48c4
+./.git/objects/7b
+./.git/objects/7b/c2bf32f21f88ad5759e01aeb6aff01ba419353
+./.git/objects/80
+./.git/objects/80/9b54b1dc85ed67cbf849a10d4c060a7a40ee4e
+./.git/objects/81
+./.git/objects/81/397f6ea14930c9c5a8cb572e69c226ff0d268e
+./.git/objects/81/8bda1fb15fa530da550855e9fa81c8f3b379a1
+./.git/objects/84
+./.git/objects/84/e91881df49bab80a8fbca7f9b7e54baeaf85b4
+./.git/objects/86
+./.git/objects/86/532f5e127e30ca270bcdb0afcc68e389324496
+./.git/objects/88
+./.git/objects/88/e4f4934873cd78ba38e4ab806fb3c2bca7cd56
+./.git/objects/89
+./.git/objects/89/a344ced0336518fc423eaea6ec5c5f686fdb46
+./.git/objects/8c
+./.git/objects/8c/1207d5d0e1e98b346829a6c8562b893a93e4ca
+./.git/objects/8c/cc6bdfdf4d2d2164d11d825eeda7468bd272a5
+./.git/objects/90
+./.git/objects/90/13a6a39ed3416f5a2f84238e2043260269da95
+./.git/objects/91
+./.git/objects/91/50429ca6b0aecbc053cabde83c04647d2e9c59
+./.git/objects/91/ab810d8be67a19f6b860e63e499b0c30a2ffd8
+./.git/objects/93
+./.git/objects/93/18009c1f9d62993959bfc1b91997385d1e9b25
+./.git/objects/93/2480b8109b747d50a9c58d5d29ff7bbd69bd68
+./.git/objects/93/5cca4e209a89cd0906e172fc1323c66f77017b
+./.git/objects/97
+./.git/objects/97/6a0bc566afbef4c57a770c00ab77c030cccaa3
+./.git/objects/99
+./.git/objects/99/ca6b6cf7599e727afffbaea864e6da7816efe7
+./.git/objects/9e
+./.git/objects/9e/44a3f6ddfd3534f722fbf13b57e680efb0fc1f
+./.git/objects/a0
+./.git/objects/a0/42034bc3029fd27f97615edb8e7bda0a0fca3c
+./.git/objects/a2
+./.git/objects/a2/08fbf829c7d2ee9fa36156e796361572483b1d
+./.git/objects/a2/14246c8c867c2d6b0c39fa7a9848c104613da8
+./.git/objects/a2/fe2ea588b073dfc796970a072e97e2d8d9b54f
+./.git/objects/a3
+./.git/objects/a3/1a6c02c70314c3cbedf1c3a6769ed158d16655
+./.git/objects/a5
+./.git/objects/a5/16fe3eeba97be65d6782b8cfeb72a2bd253fee
+./.git/objects/a6
+./.git/objects/a6/000430057ca874fd381e63f639b8202ed9e094
+./.git/objects/a9
+./.git/objects/a9/5709c6d2bb792d547902d2e47aca055dec19b8
+./.git/objects/a9/b920625f396ada66733f4ecffb15a2e2c18653
+./.git/objects/ab
+./.git/objects/ab/808d063ae116281c91e04a982f1f17ca748412
+./.git/objects/ac
+./.git/objects/ac/1145e37079131605409426fcb531c2ab936006
+./.git/objects/ac/f1b121b973de32a53fb059241e0bf0bfc38992
+./.git/objects/ae
+./.git/objects/ae/34c0bbc130c2c4ca9b25fe42e8b81f8f9562c2
+./.git/objects/ae/3f25135ddf5f5e8fc771a7d773de399e4cb013
+./.git/objects/af
+./.git/objects/af/de023e3a77439206234e35bad35c142355f90a
+./.git/objects/b3
+./.git/objects/b3/016b3a5fd172166e95db25a67b2ae06e16d8bd
+./.git/objects/b5
+./.git/objects/b5/6fd2b8107bf4e45faec974ad671d4741a64ff6
+./.git/objects/b5/d1b44700d9c808d3bb98100d2806cd87605fe7
+./.git/objects/b6
+./.git/objects/b6/3e837e10fd649a0dc95b92ce12e1b8d8f8cb60
+./.git/objects/b9
+./.git/objects/b9/60894b6599b86dfcee8b4bc14aee0595216ca6
+./.git/objects/ba
+./.git/objects/ba/3b865c7020da095cb602c2a662620e8556f004
+./.git/objects/bd
+./.git/objects/bd/7ec54836305c23d8a8cc8b7ed7b5c638448ee2
+./.git/objects/bd/cf170da32735c6c2877d6d7a6aab3d160f6f9f
+./.git/objects/c3
+./.git/objects/c3/fd7bb0b85f92285a65fef48c8578a4c5b02274
+./.git/objects/c4
+./.git/objects/c4/4f32bc8a66ea8cdc83d07fc7b70c7eec38adca
+./.git/objects/c7
+./.git/objects/c7/2df60f779cffbad57264d8db3e6bbe88b082d4
+./.git/objects/c7/5b34ed9627dd8736eb229aac57e041409f2599
+./.git/objects/c8
+./.git/objects/c8/e55cd6dc27105d5bdcd6b10c40fc56e02cee46
+./.git/objects/cb
+./.git/objects/cb/ba986e090655ad83228573a8e41addfbf7a29f
+./.git/objects/cd
+./.git/objects/cd/eed1283015361646f123c99ef6cae85751bdd5
+./.git/objects/cf
+./.git/objects/cf/fc3e7cdd3f6fbb0f49ed3ecb855482b7931a97
+./.git/objects/d0
+./.git/objects/d0/0679377c36379f88b60cfbc642c4093c4286c2
+./.git/objects/d6
+./.git/objects/d6/3de41eb1591fd39a0d94d208fec42fb5419f31
+./.git/objects/d6/6c2c7965a9843a071318921a39127fbba2987a
+./.git/objects/d8
+./.git/objects/d8/1f4e6477a605e3ab0b6209f1308b34391bda28
+./.git/objects/da
+./.git/objects/da/140d4eecd5313521d7671cb3965140a50c177f
+./.git/objects/db
+./.git/objects/db/f5ffcc9b2c88f3a70a49cdf359066b098cea73
+./.git/objects/e2
+./.git/objects/e2/5b229928db8a98bb8e95395f96778a7e866025
+./.git/objects/e2/e296b8636ed84a8f4b2d336961ffe37220d96f
+./.git/objects/e3
+./.git/objects/e3/5d766e5a1fbc0bfacbbcca42c802ee9f29ea0a
+./.git/objects/e6
+./.git/objects/e6/9de29bb2d1d6434b8b29ae775ad8c2e48c5391
+./.git/objects/e7
+./.git/objects/e7/8c2f2f6a3a159ca75fd375d3727121a839564b
+./.git/objects/e9
+./.git/objects/e9/5048b8c42a7486fe9ad9bf1ef314ed7edc9849
+./.git/objects/ea
+./.git/objects/ea/9ba509c5897fb784dd1e566768052ea9c6dcb1
+./.git/objects/eb
+./.git/objects/eb/8637946f287a29fdae9600b60731057efd5eba
+./.git/objects/eb/f904e4381146f2e840710803f5a494dd959f8c
+./.git/objects/f0
+./.git/objects/f0/4d2d633141d68746c12ce5b6bb60f47e74688c
+./.git/objects/f0/576f61a8d85277e54528ffe6894332dad0d1c9
+./.git/objects/f0/6a7336954b3ef5a8abf70a3ff2638f5d72382e
+./.git/objects/f0/793121a5e30ca4ba2f6bf40c62952dde9f15e4
+./.git/objects/f0/b66a1be21d3a195ade0fca4f7eb83b437f5e19
+./.git/objects/f1
+./.git/objects/f1/5a90cc6b06c6dadf38aa2a421be91ff071a1a7
+./.git/objects/f1/aea384241eb1d356929932e422d4e532e2fa07
+./.git/objects/f2
+./.git/objects/f2/2a8b189e34c3f94f88e2ac430433514e1290dd
+./.git/objects/f5
+./.git/objects/f5/c96d636b026dfc2a6fb205e5225faed46e5ca0
+./.git/objects/f6
+./.git/objects/f6/177fb7f0c52f83b0a9087f3545abbf36ec8202
+./.git/objects/f9
+./.git/objects/f9/0b2b89efbbd8fd7f544661bb6cb7b450ee67af
+./.git/objects/f9/a08a9c158a6da33c5610dab5d67264e5641ceb
+./.git/objects/fb
+./.git/objects/fb/2edf24937a46f91056e467f40a3db61ca87f6c
+./.git/objects/fb/f38a0dff19f4421d8e3dd27f9a5c6d5069bba5
+./.git/objects/fc
+./.git/objects/fc/c45005d44317b3d6a435b9593cb8487f55d5b2
+./.git/objects/fd
+./.git/objects/fd/3e046a56da617051c3ff2b343bf75ed6914631
+./.git/objects/ff
+./.git/objects/ff/255e35c11afed5728a9febed5d3d88c998d7dc
+./.git/objects/info
+./.git/objects/pack
+./.git/objects/pack/pack-eb4118c742cd9f329b4fee450dfe844597efede1.idx
+./.git/objects/pack/pack-eb4118c742cd9f329b4fee450dfe844597efede1.pack
+./.git/ORIG_HEAD
+./.git/packed-refs
+./.git/refs
+./.git/refs/heads
+./.git/refs/heads/dev
+./.git/refs/heads/doc
+./.git/refs/heads/main
+./.git/refs/remotes
+./.git/refs/remotes/origin
+./.git/refs/remotes/origin/dev
+./.git/refs/remotes/origin/HEAD
+./.git/refs/remotes/origin/main
+./.git/refs/tags
+./.gitignore
+./app
+./app/main.py
+./app/static
+./app/static/css
+./app/static/css/styles.css
+./app/static/js
+./app/static/js/markdown-content.js
+./app/static/js/plotly_demo.js
+./app/static/js/text.md
+./app/static/js/weather.csv
+./app/templates
+./app/templates/index.html
+./app/utils
+./app/utils/simple.py
+./app/utils/__pycache__
+./app/utils/__pycache__/simple.cpython-312.pyc
+./app/__pycache__
+./app/__pycache__/main.cpython-312.pyc
+./collect_for_doc.sh
+./complete.txt
+./Dockerfile
+./docs
+./docs/browser_screenshot.jpg
+./k8s
+./k8s/deployment.yaml
+./k8s/service.yaml
+./LICENSE
+./local_run.md
+./README.md
+./requirements.txt
