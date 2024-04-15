@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: weather-app
-        image: impulsleistung/weather-app:latest  # Your Docker image
+        image: impulsleistung/weather-app:v1
         ports:
         - containerPort: 8000  # The port your app runs on
